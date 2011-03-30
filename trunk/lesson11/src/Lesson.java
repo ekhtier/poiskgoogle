@@ -23,7 +23,7 @@ public class Lesson {
         //System.setProperty("http.proxyHost", null);
 		
 		  try {
-			 url = new URL("http://www.google.com/search?q=BMW");
+			 url = new URL("http://www.google.com/search?q=AUDI");
 			 URLConnection connection = url.openConnection();
 			 connection.setRequestProperty("User-Agent", "google");
 			 BufferedReader r = new BufferedReader(new InputStreamReader(url.openStream(),"UTF-8"));
