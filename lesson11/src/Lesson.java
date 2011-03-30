@@ -35,6 +35,7 @@ public class Lesson {
                  sb.append(s);
              }
              
+             
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
