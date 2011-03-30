@@ -18,15 +18,15 @@ public class Lesson {
 		// TODO Auto-generated method stub
 
 		StringBuilder sb = new StringBuilder();
-		System.setProperty("http.proxyHost", "proxy.stusta.mhn.de");
-        System.setProperty("http.proxyPort", "3130");
+		//System.setProperty("http.proxyHost", "proxy.stusta.mhn.de");
+        //System.setProperty("http.proxyPort", "3130");
         //System.setProperty("http.proxyHost", null);
 		
 		  try {
 			 url = new URL("http://www.google.com/search?q=AUDI");
 			 URLConnection connection = url.openConnection();
 			 connection.setRequestProperty("User-Agent", "google");
-			 BufferedReader r = new BufferedReader(new InputStreamReader(url.openStream(),"UTF-8"));
+			 BufferedReader r = new BufferedReader(new InputStreamReader(connection.getInputStream()));
              String s = r.readLine();
              sb.append(s);
              while(s!=null){
