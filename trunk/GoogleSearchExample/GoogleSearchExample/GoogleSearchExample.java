@@ -2,6 +2,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** 
 
@@ -27,15 +29,15 @@ public class GoogleSearchExample {
 
             //Authenticator.setDefault(new HttpAuthenticateProxy("proxyuserName", "proxyPwd"));
 
-            //System.setProperty("http.proxyHost", "proxyServer");
+            System.setProperty("http.proxyHost", "proxy.stusta.mhn.de");
 
-            //System.setProperty("http.proxyPort", "8080");
+            System.setProperty("http.proxyPort", "3130");
 
            
 
-            while (true) {
+           
 
-                  String link = "http://www.google.co.in/search?q=ganesh+gowtham";
+                  String link = "http://maps.google.com/m?q=55.711098%2C37.610092&hl=de";
 
                   URL url = new URL(link);
 
@@ -45,21 +47,32 @@ public class GoogleSearchExample {
 
                   BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
-                  String inputLine;                              
+                  String inputLine;  
+                  StringBuilder str = new StringBuilder();
 
-                   while ((inputLine = in.readLine()) != null)
+                  while ((inputLine = in.readLine()) != null)
 
                    {
-
-                         System.out.println(inputLine);
-
+                	  	 str.append(inputLine);
                    }
 
                   in.close();
+                  
+                  System.out.println(str);
+                  
+                  Pattern p = Pattern.compile("<div class=\"qovsme\">.*?</div>");
+                  Matcher m = p.matcher(str);
+                  String s; 
+                  while (m.find()){
+                	  s = str.substring(m.start(), m.end());
+                	  System.out.println(s);
+                	  System.out.println(s.substring(20, s.indexOf("</div>")));
+                	  
+                  }
 
             }
 
-      }
+      
 
 }
 
