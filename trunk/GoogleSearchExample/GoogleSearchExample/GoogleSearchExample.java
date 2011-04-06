@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.Authenticator;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.regex.Matcher;
@@ -27,13 +28,18 @@ public class GoogleSearchExample {
 
       public static void main(String[] args) throws Exception {
 
-            //Authenticator.setDefault(new HttpAuthenticateProxy("proxyuserName", "proxyPwd"));
+            //Authenticator.setDefault(new ProxyAuthenticator("proxyuserName", "proxyPwd"));
 
             System.setProperty("http.proxyHost", "proxy.stusta.mhn.de");
 
             System.setProperty("http.proxyPort", "3130");
 
-           
+           //double [][] koordinaten = new double [10][2];
+            double [][]k = {{55.89014327, 13.43569105},{53.89014327, 11.43569105}};
+           for (int i=0; i<k.length; i++)
+           {
+        	   
+           }
 
            
 
