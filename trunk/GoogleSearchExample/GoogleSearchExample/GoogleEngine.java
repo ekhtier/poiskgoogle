@@ -11,18 +11,20 @@ import java.util.regex.Pattern;
 public class GoogleEngine {
 	String link;
 	URL url;
+	
 	public void getGoogleDescription(){
 
         //Authenticator.setDefault(new ProxyAuthenticator("proxyuserName", "proxyPwd"));
 
-        //System.setProperty("http.proxyHost", "proxy.stusta.mhn.de");
+        System.setProperty("http.proxyHost", "proxy.stusta.mhn.de");
 
-        //System.setProperty("http.proxyPort", "3130");
+        System.setProperty("http.proxyPort", "3130");
         
         
         Pattern p = Pattern.compile("<div class=\"qovsme\">.*?</div>");            
        //double [][] koordinaten = new double [10][2];
         double [][]k = {{55.89014327, 13.43569105},{53.89014327, 11.43569105}};
+        String [] arr_adr = new String [2];
  	   try {
         for (int i=0; i<k.length; i++)
        {
@@ -48,18 +50,20 @@ public class GoogleEngine {
 
            in.close();
            
-           System.out.println(str);
+           //System.out.println(str);
            
 
            Matcher m = p.matcher(str);
            String s; 
            while (m.find()){
          	  s = str.substring(m.start(), m.end());
-         	  System.out.println(s);
-         	  System.out.println(s.substring(20, s.indexOf("</div>")));
+         	  //System.out.println(s);
+         	  arr_adr[i] = s.substring(20, s.indexOf("</div>")); 
+         	  System.out.println(arr_adr[i]);
          	  
            }
-	
+           
+          // System.out.println(s.substring(20, s.indexOf("</div>")));
        
        }
 
