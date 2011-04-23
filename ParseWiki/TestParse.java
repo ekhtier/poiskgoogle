@@ -4,6 +4,9 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,8 +24,8 @@ public class TestParse {
 		yahoo.parseSite(zeile);
 	}
 	public String getFromSite(){
-	       System.setProperty("http.proxyHost", "proxy.stusta.mhn.de");
-	       System.setProperty("http.proxyPort", "3130");
+	 //      System.setProperty("http.proxyHost", "proxy.stusta.mhn.de");
+	 //      System.setProperty("http.proxyPort", "3130");
 		URL url;
 		String r;
 		StringBuilder str = new StringBuilder();
@@ -64,21 +67,39 @@ public class TestParse {
 //			System.out.println(clear);
 			
 			System.out.println(str);
-		
-			Pattern p = Pattern.compile(">[^<]+<");
-			Pattern br = Pattern.compile("\\{[^\\{]*(?!\\})\\}");
-			Pattern clear_p = Pattern.compile("<[^<]*>");
-			Matcher m = br.matcher(str);
+			String a = "sdfgsracacdbcbedgdesabrg";
+			
+			//Pattern p = Pattern.compile(">[^<]+<");
+			//Pattern br = Pattern.compile("\\{[^\\}]*\\}");
+			//Pattern simple = Pattern.compile("a[[a[.]b]]??b");
+			Pattern pNotA = Pattern.compile("a[^a]*b");
+			//Pattern clear_p = Pattern.compile("<[^<]*>");
+			Matcher m_a = pNotA.matcher(a);
 			//m = clear_p.matcher(str);
 			//String clear = m.replaceAll("");
-			while(m.find()){
-				System.out.println("\n!"+str.substring(m.start(),m.end()));
+			ArrayList <String> l = new ArrayList<String>();
+			while(m_a.find()){
+				
+				Pattern pNotB = Pattern.compile("a[^b]*b");
+				Matcher m_b = pNotB.matcher(a.substring(m_a.start(),m_a.end()));
+				while(m_b.find())
+				{
+				l.add(a.substring(m_a.start(),m_a.end()).substring(m_b.start(),m_b.end()));
+				System.out.println("\n!"+a.substring(m_a.start(),m_a.end()).substring(m_b.start(),m_b.end()));
+				//System.out.println("\n"+m.start()+" "+m.end());
+				}
 			}		
+			for(int i=0;i<l.size();i++)
+			{
+			Pattern r = Pattern.compile(l.get(i));
+			Matcher m = r.matcher(a);
+			a = m.replaceAll("");
 			//System.out.println(clear);
 			//String [] words = clear.split(" ");
 			//for(int i=0;i<words.length;i++);
 			//	System.out.println(words[i]);
-			
+			}
+			System.out.println(a);
 		} 
 		
 	
