@@ -55,23 +55,26 @@ public class TestParse {
 
 			//String test = "asdf <div lfkdjg>Hello lell</div>";
 			//Pattern p = Pattern.compile("<((div)[^<]*</div>)|((b)[^<]*</b>)");
-			Pattern p_script = Pattern.compile("<script[^<]*</script>");
-			Matcher m = p_script.matcher(str);
+//			Pattern p_script = Pattern.compile("<script[^<]*</script>");
+
 //			while(m.find()){
 //				System.out.println("\n!"+str.substring(m.start(),m.end()));
 //			}
-			String clear = m.replaceAll("");
+//			String clear = m.replaceAll("");
 //			System.out.println(clear);
 			
+			System.out.println(str);
+		
 			Pattern p = Pattern.compile(">[^<]+<");
+			Pattern br = Pattern.compile("\\{[^\\{]*(?!\\})\\}");
 			Pattern clear_p = Pattern.compile("<[^<]*>");
-			m = clear_p.matcher(str);
-			clear = m.replaceAll("");
-			/*while(m.find()){
+			Matcher m = br.matcher(str);
+			//m = clear_p.matcher(str);
+			//String clear = m.replaceAll("");
+			while(m.find()){
 				System.out.println("\n!"+str.substring(m.start(),m.end()));
-			}
-			*/
-			System.out.println(clear);
+			}		
+			//System.out.println(clear);
 			//String [] words = clear.split(" ");
 			//for(int i=0;i<words.length;i++);
 			//	System.out.println(words[i]);
