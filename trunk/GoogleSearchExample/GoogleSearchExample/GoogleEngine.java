@@ -1,7 +1,12 @@
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -15,13 +20,20 @@ public class GoogleEngine {
 	String link;
 	URL url;
 	
-	public void getGoogleDescription(){
+	public void getGoogleDescription() throws IOException{
 
         //Authenticator.setDefault(new ProxyAuthenticator("proxyuserName", "proxyPwd"));
 
         System.setProperty("http.proxyHost", "proxy.stusta.mhn.de");
 
         System.setProperty("http.proxyPort", "3130");
+        
+//        String dateiName = "HausNummerError.txt";	
+//        FileOutputStream schreibeStrom = new FileOutputStream(dateiName);
+        File file = new File("HausNummerError.txt");
+        FileWriter fw = new FileWriter(file);
+        
+//        PrintWriter pw = new PrintWriter(schreibeStrom);
         
         
         Pattern p = Pattern.compile("<div class=\"qovsme\">.*?</div>");            
@@ -33,8 +45,8 @@ public class GoogleEngine {
  	   try {
         for (Coordinates item: c)
        {
-    	   link = "http://maps.google.com/m?q="+item.lon+"%2C"+item.lat+"&hl=de";
-    	   System.out.println(link);
+    	   link = "http://maps.google.com/m?q="+item.lat+"%2C"+item.lon+"&hl=de";
+    	   //System.out.println(link);
 
 			url = new URL(link);
            URLConnection connection = url.openConnection();
@@ -64,13 +76,17 @@ public class GoogleEngine {
          	  s = str.substring(m.start(), m.end());
          	  //System.out.println(s);
          	  arr_adr.put(item.key, s.substring(20, s.indexOf("</div>"))); 
-         	  System.out.println(arr_adr.get(item.key));
+         	  System.out.println(item.key + "   " +  arr_adr.get(item.key));
+         	  fw.write(item.key + "   " +  arr_adr.get(item.key) + "\n");
+         	  fw.flush();
          	  
            }
-           
+         
+           //schreibeStrom.close();
           // System.out.println(s.substring(20, s.indexOf("</div>")));
        
        }
+        fw.close();
 
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -107,7 +123,7 @@ public class GoogleEngine {
 //	                }
 	                
 	                for (Coordinates item: koord){
-	                	System.out.println(item.key + " " + item.lat + " " + item.lon);
+	                	//System.out.println(item.key + " " + item.lat + " " + item.lon);
 	                	
 	                }
 	               
