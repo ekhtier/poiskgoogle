@@ -41,7 +41,7 @@ public class ReadFile {
 //                }
                 
                 for (Coordinates item: koord){
-                	System.out.println(item.key + " " + item.lat + " " + item.lon);
+                	//System.out.println(item.key + " " + item.lat + " " + item.lon);
                 	
                 }
                
