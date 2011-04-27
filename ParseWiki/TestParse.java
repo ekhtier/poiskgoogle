@@ -18,14 +18,15 @@ public class TestParse {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String zeile = "<div> aaa,aaaa aaaa: aaaaaa aaaaaaa!<script> function f (){test teste tsete{ttt tttt tttt tttt} zzz zzzz zzzzz zzzz}</script> bbbb&, hhhhhh, bbbbb_bbb, bbbb </div>";		
+//		String zeile = "<div> aaa,aaaa aaaa: aaaaaa aaaaaaa!<script> function f (){test teste tsete{ttt tttt tttt tttt} zzz zzzz zzzzz zzzz}</script> bbbb&, hhhhhh, bbbbb_bbb, bbbb </div>";		
 		TestParse yahoo = new TestParse();
-//		zeile = yahoo.getFromSite();
+		String zeile;
+		zeile = yahoo.getFromSite();
 		yahoo.parseSite(zeile);
 	}
 	public String getFromSite(){
-	 //      System.setProperty("http.proxyHost", "proxy.stusta.mhn.de");
-	 //      System.setProperty("http.proxyPort", "3130");
+	      //System.setProperty("http.proxyHost", "proxy.stusta.mhn.de");
+	      //System.setProperty("http.proxyPort", "3130");
 		URL url;
 		String r;
 		StringBuilder str = new StringBuilder();
@@ -67,39 +68,58 @@ public class TestParse {
 //			System.out.println(clear);
 			
 			System.out.println(str);
-			String a = "sdfgsracacdbcbedgdesabrg";
+			//String a = "sdfgsracacdbcbedgdesabrg";
 			
 			//Pattern p = Pattern.compile(">[^<]+<");
 			//Pattern br = Pattern.compile("\\{[^\\}]*\\}");
 			//Pattern simple = Pattern.compile("a[[a[.]b]]??b");
-			Pattern pNotA = Pattern.compile("a[^a]*b");
+			Pattern r;
+			Matcher m;
+			Pattern pNotA = Pattern.compile("\\{[^\\{]*\\}");
 			//Pattern clear_p = Pattern.compile("<[^<]*>");
-			Matcher m_a = pNotA.matcher(a);
+
 			//m = clear_p.matcher(str);
 			//String clear = m.replaceAll("");
 			ArrayList <String> l = new ArrayList<String>();
+			boolean b;
+			
+			do{
+				l.clear();
+				Matcher m_a = pNotA.matcher(str);
+			
 			while(m_a.find()){
 				
-				Pattern pNotB = Pattern.compile("a[^b]*b");
-				Matcher m_b = pNotB.matcher(a.substring(m_a.start(),m_a.end()));
+				Pattern pNotB = Pattern.compile("\\{[^\\}]*\\}");
+				Matcher m_b = pNotB.matcher(str.substring(m_a.start(),m_a.end()));
 				while(m_b.find())
 				{
-				l.add(a.substring(m_a.start(),m_a.end()).substring(m_b.start(),m_b.end()));
-				System.out.println("\n!"+a.substring(m_a.start(),m_a.end()).substring(m_b.start(),m_b.end()));
+				l.add(str.substring(m_a.start(),m_a.end()).substring(m_b.start(),m_b.end()));
+				System.out.println("\n!"+str.substring(m_a.start(),m_a.end()).substring(m_b.start(),m_b.end()));
 				//System.out.println("\n"+m.start()+" "+m.end());
 				}
-			}		
+			}
+			
+			
+			System.out.println(l.size());
 			for(int i=0;i<l.size();i++)
 			{
-			Pattern r = Pattern.compile(l.get(i));
-			Matcher m = r.matcher(a);
-			a = m.replaceAll("");
+			System.out.println(i + " before" + " " + l.get(i));
+			l.set(i, l.get(i).replaceAll("\\{", "\\\\{").replaceAll("\\}", "\\\\}"));
+			System.out.println(i + " after" + " " + l.get(i));
+			//l.set(i, l.get(i).replaceAll("}", "\\}"));
+			r = Pattern.compile(l.get(i));
+			m = r.matcher(str);
+			str = m.replaceAll("");
 			//System.out.println(clear);
 			//String [] words = clear.split(" ");
 			//for(int i=0;i<words.length;i++);
 			//	System.out.println(words[i]);
 			}
-			System.out.println(a);
+			r = Pattern.compile("[\\{\\}]");
+			m = r.matcher(str);
+			
+			} while(m.find());
+			System.out.println(str);
 		} 
 		
 	
