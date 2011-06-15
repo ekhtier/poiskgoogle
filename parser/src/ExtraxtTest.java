@@ -62,10 +62,36 @@ public void doSome(String[] args) throws MalformedURLException, IOException{
     }
 ArrayList<String> res_coll = clearByFirstChar(l, '#');
 res_coll = clearByFirstChar(res_coll, '#');
-for (int i=0;i<res_coll.size();i++){
-	System.out.println(res_coll.get(i));
+Collections.sort(res_coll, String.CASE_INSENSITIVE_ORDER);
+HashMap<String, Integer> res_freq = new HashMap<String, Integer>(); 
+
+
+
+
+int amm = 1;
+
+for (int i=1; i<res_coll.size(); i++){
+	if (res_coll.get(i-1).equalsIgnoreCase(res_coll.get(i))){
+		amm++;
+	}
+	else{
+		res_freq.put(res_coll.get(i-1), amm);
+		amm=1;
+	}	
 }
-	
+
+
+
+
+for(String key: res_freq.keySet()){
+	System.out.println(key + " " + res_freq.get(key));
+}
+
+
+//for (int i=0;i<res_coll.size();i++){
+//	System.out.println(res_coll.get(i));
+//}
+//	
     
 }
 
