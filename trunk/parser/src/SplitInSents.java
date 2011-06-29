@@ -20,7 +20,7 @@ public class SplitInSents{
 		while (bi.next() != BreakIterator.DONE) {
 		String sentence = s.substring(index, bi.current());
 		str.add(sentence);
-		System.out.println("Sentence: " + sentence);
+//		System.out.println("Sentence: " + sentence);
 		index = bi.current();
 		}
 		return str;

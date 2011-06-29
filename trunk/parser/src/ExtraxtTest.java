@@ -33,25 +33,34 @@ public void doSome(String[] args) throws MalformedURLException, IOException{
 
     System.out.println("Document title:");
     String title=getTitle(source);
-    System.out.println(title==null ? "(none)" : title);
+//    System.out.println(title==null ? "(none)" : title);
 
     System.out.println("\nDocument description:");
     String description=getMetaValue(source,"description");
-    System.out.println(description==null ? "(none)" : description);
+//    System.out.println(description==null ? "(none)" : description);
 
     System.out.println("\nDocument keywords:");
     String keywords=getMetaValue(source,"keywords");
-    System.out.println(keywords==null ? "(none)" : keywords);
+//    System.out.println(keywords==null ? "(none)" : keywords);
 
-    System.out.println("\nLinks to other documents:");
+////    System.out.println("\nLinks to other documents:");
     List<Element> linkElements=source.getAllElements(HTMLElementName.A);
-    for (Element linkElement : linkElements) {
-        String href=linkElement.getAttributeValue("href");
-        if (href==null) continue;
-        // A element can contain other tags so need to extract the text from it:
-        String label=linkElement.getContent().getTextExtractor().toString();
-        //System.out.println(label+" <"+href+'>');
-    }
+    UrlGrabber u = new UrlGrabber();
+    u.filterLinks(linkElements);
+////    new UrlGrabber().filterLinks(linkElements);
+    
+    
+//    System.out.println("\nLinks to other documents:");
+//    List<Element> linkElements=source.getAllElements(HTMLElementName.A);
+//    for (Element linkElement : linkElements) {
+//        String href=linkElement.getAttributeValue("href");
+//        if (href==null) continue;
+//        // A element can contain other tags so need to extract the text from it:
+//        String label=linkElement.getContent().getTextExtractor().toString();
+//        System.out.println(href);
+//    }
+
+
 
     System.out.println("\nAll text from file (exluding content inside SCRIPT and STYLE elements):\n");
     //System.out.println(source.getTextExtractor().setIncludeAttributes(true).toString());
@@ -97,7 +106,7 @@ writeToDB(l_snt);
 
 
 for (int i=0;i<l_snt.size();i++){
-	System.out.println(l_snt.get(i));
+	//System.out.println(l_snt.get(i));
 }
 	
     
