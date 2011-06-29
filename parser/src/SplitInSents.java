@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class RegExp{
+public class SplitInSents{
 	public ArrayList<String> split(String s){
 		ArrayList<String> str = new ArrayList<String>();
 		

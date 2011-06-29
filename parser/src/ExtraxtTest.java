@@ -55,24 +55,24 @@ public void doSome(String[] args) throws MalformedURLException, IOException{
 
     System.out.println("\nAll text from file (exluding content inside SCRIPT and STYLE elements):\n");
     //System.out.println(source.getTextExtractor().setIncludeAttributes(true).toString());
-    String [] s = source.getTextExtractor().setIncludeAttributes(true).toString().split(" "); // sentence split ". "
-    ArrayList<String>l = new ArrayList<String>();
-    for (int i=0;i<s.length;i++){
-        if(s[i].length()>0)
-//            if(s[i].charAt(0) != '/'&&!(Character.isDigit(s[i].charAt(0))))
-//            {
-                l.add(s[i]);
-                //System.out.println(s[i]);
-//            }                  
-    }
-ArrayList<String> res_coll = clearByFirstChar(l, '#');
-res_coll = clearByFirstChar(res_coll, '#');
-Collections.sort(res_coll, String.CASE_INSENSITIVE_ORDER);
+//    String [] s = source.getTextExtractor().setIncludeAttributes(true).toString().split(" "); // sentence split ". "
+//    ArrayList<String>l = new ArrayList<String>();
+//    for (int i=0;i<s.length;i++){
+//        if(s[i].length()>0)
+////            if(s[i].charAt(0) != '/'&&!(Character.isDigit(s[i].charAt(0))))
+////            {
+//                l.add(s[i]);
+//                //System.out.println(s[i]);
+////            }                  
+//    }
+//ArrayList<String> res_coll = clearByFirstChar(l, '#');
+//res_coll = clearByFirstChar(res_coll, '#');
+//Collections.sort(res_coll, String.CASE_INSENSITIVE_ORDER);
 
-
+ArrayList<String>res_coll = new SplitInWords().split(source.getTextExtractor().setIncludeAttributes(true).toString());
 
 //String [] snt = source.getTextExtractor().setIncludeAttributes(true).toString().split(". "); // sentence split ". "
-ArrayList<String>l_snt = new RegExp().split(source.getTextExtractor().setIncludeAttributes(true).toString());
+ArrayList<String>l_snt = new SplitInSents().split(source.getTextExtractor().setIncludeAttributes(true).toString());
 //for (int i=0;i<snt.length;i++){
 //    if(snt[i].length()>0)
 ////        if(s[i].charAt(0) != '/'&&!(Character.isDigit(s[i].charAt(0))))
