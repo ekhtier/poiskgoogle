@@ -13,6 +13,10 @@ import java.net.*;
 public class ExtraxtTest {
    
 public void doSome(String[] args) throws MalformedURLException, IOException{
+	Properties defaultProps = new Properties();
+	FileInputStream in = new FileInputStream("db.conf");
+	defaultProps.load(in);
+	in.close();
     String sourceUrlString="http://en.wikipedia.org/wiki/Singular_value_decomposition";
     System.setProperty("http.proxyHost", "proxy.stusta.mhn.de");
     System.setProperty("http.proxyPort", "3130");
