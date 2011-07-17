@@ -27,7 +27,7 @@ public class SplitInSents{
 		
 		
 	}
-	//"House home. Test version. A. Bosch. A cat."
+
 	
 	
 
