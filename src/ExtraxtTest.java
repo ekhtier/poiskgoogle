@@ -7,9 +7,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.sql.Statement;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.io.*;
 import java.net.*;
 
+import org.apache.commons.math.linear.Array2DRowRealMatrix;
+import org.apache.commons.math.linear.RealMatrix;
+import org.apache.commons.math.linear.SingularValueDecompositionImpl;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
@@ -114,13 +119,13 @@ public class ExtraxtTest {
 		BufferedReader in = new BufferedReader(new FileReader("eurocrisis.txt"));
 		String str = null;
 		String text;
-		text = null;
+		text = "";
 		ArrayList<String> dic = new ArrayList<String>();
 
 		while ((str = in.readLine()) != null) {
 			text = text + str;
-
 		}
+
 		ArrayList<String> sentences = new SplitInSents().split(text);
 
 		Analyzer analyzer = new EnglishAnalyzer(Version.LUCENE_31);
@@ -136,27 +141,31 @@ public class ExtraxtTest {
 			dic.add(term.toString());
 
 		}
+		System.out.println(dic.size());
 		HashSet<String> hashSet = new HashSet<String>(dic);
 		dic.clear();
 		dic.addAll(hashSet);
+		System.out.println("__" + dic.size());
 
-		int[][] stmatrix = new int[dic.size()][sentences.size()];
+		double[][] stmatrix = new double[dic.size()][sentences.size()];
 
 		for (int j = 0; j < sentences.size(); j++) {
 			for (int i = 0; i < dic.size(); i++) {
-				ArrayList<String> terms = new ArrayList<String>();
-				ArrayList<String> words = new ArrayList<String>();
+				//ArrayList<String> terms = new ArrayList<String>();
+				//ArrayList<String> words = new ArrayList<String>();
 				TokenStream streaming = analyzer.tokenStream("contents",
-						new StringReader(text));
+						new StringReader(sentences.get(j)));
 				int count = 0;
 				while (true) {
-					if (!stream.incrementToken())
+					if (!streaming.incrementToken())
 						break;
-					AttributeSource token = stream.cloneAttributes();
+					AttributeSource token = streaming.cloneAttributes();
 					CharTermAttribute term = (CharTermAttribute) token
 							.addAttribute(CharTermAttribute.class);
-					if (term.toString().equalsIgnoreCase(dic.get(j))) {
+					//System.out.println(term.toString());
+					if (term.toString().equalsIgnoreCase(dic.get(i))) {
 						count++;
+						//System.out.println(dic.get(i));
 					}
 					stmatrix[i][j] = count;
 				}
@@ -164,12 +173,34 @@ public class ExtraxtTest {
 			}
 
 		}
+
 		for (int i = 0; i < dic.size(); i++) {
 			for (int j = 0; j < sentences.size(); j++) {
-				System.out.print(stmatrix[i][j] + " ");
+				
+				//System.out.print(stmatrix[i][j] + " ");
 			}
-			System.out.println();
+			    //System.out.println();
 		}
+		RealMatrix m = new Array2DRowRealMatrix(stmatrix);
+		SingularValueDecompositionImpl svd = new SingularValueDecompositionImpl(m);
+		RealMatrix u = svd.getS();
+		double [][] u_arr = u.getData();
+		
+	     DecimalFormat df = new DecimalFormat("#####0.00");
+	     DecimalFormatSymbols dfs = df.getDecimalFormatSymbols();
+
+	     dfs.setDecimalSeparator('.');
+	     df.setDecimalFormatSymbols(dfs);
+		
+		for (int i = 0; i < u_arr.length; i++) {
+			for (int j = 0; j < u_arr[0].length; j++) {
+				
+				System.out.print(df.format(u_arr[i][j]) + " ");
+			}
+			    System.out.println();
+		   }
+		System.out.println(u_arr.length);
+		System.out.println(u_arr[0].length);
 	}
 
 }

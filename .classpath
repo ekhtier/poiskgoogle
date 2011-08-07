@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="lib/lucene-spellchecker-3.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-stempel-3.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-wordnet-3.3.0.jar"/>
+	<classpathentry kind="lib" path="G:/Java/lib/ext/commons-math-2.2/commons-math-2.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
