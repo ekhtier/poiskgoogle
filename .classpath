@@ -5,5 +5,11 @@
 	<classpathentry kind="lib" path="lib/jericho-html-3.2.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="lib" path="lib/ojdbc14.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-analyzers-3.3.0.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-core-3.3.0.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-queryparser-3.3.0.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-spellchecker-3.3.0.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-stempel-3.3.0.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-wordnet-3.3.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
