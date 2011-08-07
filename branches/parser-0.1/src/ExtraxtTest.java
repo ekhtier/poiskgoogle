@@ -10,6 +10,13 @@ import java.sql.Statement;
 import java.io.*;
 import java.net.*;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.util.AttributeSource;
+import org.apache.lucene.util.Version;
+
 public class ExtraxtTest {
 
 	public void doSome() throws MalformedURLException, IOException {
@@ -21,40 +28,40 @@ public class ExtraxtTest {
 		ArrayList<String> filtered_links;
 
 		UrlGrabber u = new UrlGrabber();
-		try {
-			stmt = DBWorker.getDBConnection().createStatement();
-
-			ResultSet rs = stmt
-					.executeQuery("select link_id, link from uniqlinks");
-			Source source = null;
-			while (rs.next()) {
-				System.out.println(rs.getString("LINK"));
-				source = UrlGrabber.getHtmlContent(rs.getString(2));
-				source.fullSequentialParse();
-				// System.out.println("\nDocument keywords:");
-				// String keywords=getMetaValue(source,"keywords");
-
-				// List<Element> linkElements =
-				// source.getAllElements(HTMLElementName.A);
-				// filtered_links = u.filterLinks(linkElements);
-				// System.out.println(filtered_links.size());
-				// UrlGrabber.writeToDB(filtered_links);
-
-				// res_coll = new SplitInWords().split(source.getTextExtractor()
-				// .setIncludeAttributes(true).toString());
-				// l_snt = new Sentence();
-
-				// l_snt = new SplitInSents().split(source.getTextExtractor()
-				// .setIncludeAttributes(true).toString());
-				// DBWorker.writeTermsToDB(res_coll, "terms");
-				DBWorker.extractWordsfromTerms();
-
-			}
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			stmt = DBWorker.getDBConnection().createStatement();
+//
+//			ResultSet rs = stmt
+//					.executeQuery("select link_id, link from uniqlinks");
+//			Source source = null;
+//			while (rs.next()) {
+//				System.out.println(rs.getString("LINK"));
+//				source = UrlGrabber.getHtmlContent(rs.getString(2));
+//				source.fullSequentialParse();
+//				// System.out.println("\nDocument keydic:");
+//				// String keydic=getMetaValue(source,"keydic");
+//
+//				// List<Element> linkElements =
+//				// source.getAllElements(HTMLElementName.A);
+//				// filtered_links = u.filterLinks(linkElements);
+//				// System.out.println(filtered_links.size());
+//				// UrlGrabber.writeToDB(filtered_links);
+//
+//				// res_coll = new SplitInWords().split(source.getTextExtractor()
+//				// .setIncludeAttributes(true).toString());
+//				// l_snt = new Sentence();
+//
+//				// l_snt = new SplitInSents().split(source.getTextExtractor()
+//				// .setIncludeAttributes(true).toString());
+//				// DBWorker.writeTermsToDB(res_coll, "terms");
+//				DBWorker.extractWordsfromTerms();
+//
+//			}
+//
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 	}
 
@@ -74,7 +81,8 @@ public class ExtraxtTest {
 
 	public static void main(String[] args) throws Exception {
 		new ExtraxtTest().doSome();
- 
+		new ExtraxtTest().stringAnalize();
+
 	}
 
 	private static String getTitle(Source source) {
@@ -100,6 +108,68 @@ public class ExtraxtTest {
 			pos = startTag.getEnd();
 		}
 		return null;
+	}
+
+	public void stringAnalize() throws IOException {
+		BufferedReader in = new BufferedReader(new FileReader("eurocrisis.txt"));
+		String str = null;
+		String text;
+		text = null;
+		ArrayList<String> dic = new ArrayList<String>();
+
+		while ((str = in.readLine()) != null) {
+			text = text + str;
+
+		}
+		ArrayList<String> sentences = new SplitInSents().split(text);
+
+		Analyzer analyzer = new EnglishAnalyzer(Version.LUCENE_31);
+		TokenStream stream = analyzer.tokenStream("contents", new StringReader(
+				text));
+
+		while (true) {
+			if (!stream.incrementToken())
+				break;
+			AttributeSource token = stream.cloneAttributes();
+			CharTermAttribute term = (CharTermAttribute) token
+					.addAttribute(CharTermAttribute.class);
+			dic.add(term.toString());
+
+		}
+		HashSet<String> hashSet = new HashSet<String>(dic);
+		dic.clear();
+		dic.addAll(hashSet);
+
+		int[][] stmatrix = new int[dic.size()][sentences.size()];
+
+		for (int j = 0; j < sentences.size(); j++) {
+			for (int i = 0; i < dic.size(); i++) {
+				ArrayList<String> terms = new ArrayList<String>();
+				ArrayList<String> words = new ArrayList<String>();
+				TokenStream streaming = analyzer.tokenStream("contents",
+						new StringReader(text));
+				int count = 0;
+				while (true) {
+					if (!stream.incrementToken())
+						break;
+					AttributeSource token = stream.cloneAttributes();
+					CharTermAttribute term = (CharTermAttribute) token
+							.addAttribute(CharTermAttribute.class);
+					if (term.toString().equalsIgnoreCase(dic.get(j))) {
+						count++;
+					}
+					stmatrix[i][j] = count;
+				}
+
+			}
+
+		}
+		for (int i = 0; i < dic.size(); i++) {
+			for (int j = 0; j < sentences.size(); j++) {
+				System.out.print(stmatrix[i][j] + " ");
+			}
+			System.out.println();
+		}
 	}
 
 }
