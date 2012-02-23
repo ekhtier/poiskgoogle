@@ -2,6 +2,7 @@ import net.htmlparser.jericho.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 import java.sql.Statement;
@@ -14,9 +15,9 @@ public class ExtraxtTest {
    
 public void doSome(String[] args) throws MalformedURLException, IOException{
     String sourceUrlString="http://en.wikipedia.org/wiki/Singular_value_decomposition";
-    System.setProperty("http.proxyHost", "proxy.stusta.mhn.de");
-    System.setProperty("http.proxyPort", "3130");
-    System.getProperties().put("proxySet", "true");     
+    //System.setProperty("http.proxyHost", "proxy.stusta.mhn.de");
+    //System.setProperty("http.proxyPort", "3130");
+    //System.getProperties().put("proxySet", "true");     
     if (args.length==0)
       System.err.println("Using default argument of \""+sourceUrlString+'"');
     else
@@ -50,15 +51,15 @@ public void doSome(String[] args) throws MalformedURLException, IOException{
 ////    new UrlGrabber().filterLinks(linkElements);
     
     
-//    System.out.println("\nLinks to other documents:");
-//    List<Element> linkElements=source.getAllElements(HTMLElementName.A);
-//    for (Element linkElement : linkElements) {
-//        String href=linkElement.getAttributeValue("href");
-//        if (href==null) continue;
-//        // A element can contain other tags so need to extract the text from it:
-//        String label=linkElement.getContent().getTextExtractor().toString();
-//        System.out.println(href);
-//    }
+    System.out.println("\nLinks to other documents:");
+    //List<Element> linkElements=source.getAllElements(HTMLElementName.A);
+    for (Element linkElement : linkElements) {
+        String href=linkElement.getAttributeValue("href");
+        if (href==null) continue;
+        // A element can contain other tags so need to extract the text from it:
+        String label=linkElement.getContent().getTextExtractor().toString();
+        System.out.println(href);
+    }
 
 
 
@@ -97,8 +98,8 @@ ArrayList<String>l_snt = new SplitInSents().split(source.getTextExtractor().setI
 
 
 
-writeToDB(l_snt);
-
+//writeToDB(l_snt);
+writeToDB(res_coll);
 
 //for(String key: res_freq.keySet()){
 //	System.out.println(key + " " + res_freq.get(key));
@@ -182,24 +183,25 @@ public HashMap countFreq(ArrayList<String> al){
 
 	       // Create a connection to the database
 	       
-	       String serverName = "127.0.0.1";
-	       String portNumber = "1521";
-	       String sid = "XE";
+	       //String serverName = "127.0.0.1";
+	       //String portNumber = "1521";
+	       //String sid = "XE";
 //	       String url = "jdbc:oracle:thin:@//localhost:1521/XE"; //host_name:port_number/service_name
-	       String username = "word";
-	       String password = "word";
-	       Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@alexander-PC:1521/XE", "word", "word");
+	       //String username = "word";
+	       //String password = "word";
+	       Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521/XE", "word", "word");
 	       //("jdbc:oracle:oci8:@xe", "word", "word");
 	       
 	       
 	       
 	       Statement stmt = connection.createStatement();
+	       PreparedStatement pstmt = connection.prepareStatement("insert into terms(page_id, term_name) values(1,?)");
 	       for (int i=0;i<al.size();i++){
 	    
 //	    		System.out.println(res_coll.get(i));
-	       ins = "insert into terms(page_id, term_name) values(1,'" + al.get(i) + "')";
+	       pstmt.setString(1, al.get(i).toString());
 	       try{
-	       stmt.execute(ins); }
+	       pstmt.execute();}
 	       catch (SQLException e) {
 			   System.err.println(ins);
 			   e.printStackTrace();
