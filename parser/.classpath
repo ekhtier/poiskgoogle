@@ -2,8 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="G:/Java/lib/ext/jericho-html-3.2/dist/jericho-html-3.2.jar"/>
-	<classpathentry kind="lib" path="K:/Oracle/oraclexe/app/oracle/product/10.2.0/server/jdbc/lib/ojdbc14.jar"/>
-	<classpathentry kind="lib" path="K:/Oracle/oraclexe/app/oracle/product/10.2.0/server/jdbc/lib/ojdbc14_g.jar"/>
+	<classpathentry kind="lib" path="lib/jericho-html-3.2.jar"/>
+	<classpathentry kind="lib" path="C:/app/ad/product/11.2.0/client_1/jdbc/lib/ojdbc6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
