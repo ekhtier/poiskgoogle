@@ -4,5 +4,10 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="lib/jericho-html-3.2.jar"/>
 	<classpathentry kind="lib" path="C:/app/Oracle/product/11.1.0/client_1/jdbc/lib/ojdbc6.jar"/>
+	<classpathentry kind="lib" path="C:/feed4j-1.0/feed4j-1.0/feed4j.jar"/>
+	<classpathentry kind="lib" path="C:/feed4j-1.0/feed4j-1.0/lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="C:/feed4j-1.0/feed4j-1.0/lib/nekohtml.jar"/>
+	<classpathentry kind="lib" path="C:/feed4j-1.0/feed4j-1.0/lib/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="C:/feed4j-1.0/feed4j-1.0/lib/xml-apis.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
