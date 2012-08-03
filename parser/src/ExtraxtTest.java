@@ -8,23 +8,27 @@ import java.util.*;
 import java.sql.Statement;
 import java.io.*;
 import java.net.*;
+import rss.*;
+
+
 
 
 
 public class ExtraxtTest {
-   public List<Element> extractLinksFromPage(){
-	    String sourceUrlString="http://en.wikipedia.org/wiki/Singular_value_decomposition";
+	
+	public Source getSource(String sourceUrlString){
+		Source source = null;
 	    System.setProperty("http.proxyHost", "192.168.20.4");
 	    System.setProperty("http.proxyPort", "3128");
 	    System.getProperties().put("proxySet", "true");    
 	    Authenticator.setDefault(new ProxyAuthenticator("tsretail\\sitroniks", "123qwE"));  
 
-	    if (sourceUrlString.indexOf(':')==-1) sourceUrlString="file:"+sourceUrlString;
-	    MicrosoftConditionalCommentTagTypes.register();
+	    //if (sourceUrlString.indexOf(':')==-1) sourceUrlString="file:"+sourceUrlString;
+	    //MicrosoftConditionalCommentTagTypes.register();
 	    PHPTagTypes.register();
 	    PHPTagTypes.PHP_SHORT.deregister(); // remove PHP short tags for this example otherwise they override processing instructions
 	    MasonTagTypes.register();
-	    Source source = null;
+	    
 		try {
 			source = new Source(new URL(sourceUrlString));
 		} catch (MalformedURLException e) {
@@ -48,72 +52,40 @@ public class ExtraxtTest {
 
 //	    System.out.println("\nDocument keywords:");
 //	    String keywords=getMetaValue(source,"keywords");
-//	    System.out.println(keywords==null ? "(none)" : keywords);
+//	    System.out.println(keywords==null ? "(none)" : keywords);		
+		return source;
+	}
+   public List<Element> extractLinksFromSource(Source source){
 	    List<Element> linkElements=source.getAllElements(HTMLElementName.A);
 	   return linkElements;
    }
 public static void main(String[] args) throws MalformedURLException, IOException{
-	List<Element> linkElements = new ExtraxtTest().extractLinksFromPage();
+	Source source = new ExtraxtTest().getSource("http://en.wikipedia.org/wiki/Singular_value_decomposition");
+/*
+	List<Element> linkElements = new ExtraxtTest().extractLinksFromSource(source);
     for (Element linkElement : linkElements) 
 		System.out.println(linkElement.getAttributeValue("href"));
-		
-    
     UrlGrabber u = new UrlGrabber();
     u.writeLinksToDB(linkElements);
-/*
-    
-    
 
 
+ArrayList<String>res_coll = new Splitter().splitToWords(source.getTextExtractor().setIncludeAttributes(true).toString());
+ArrayList<String>l_snt = new Splitter().splitToSentences(source.getTextExtractor().setIncludeAttributes(true).toString());
+new ExtraxtTest().writeToDB(l_snt);
+//new ExtraxtTest().writeToDB(res_coll);
+    */
+	URL url = new URL("http://lenta.ru/rss");
+	
 
-    System.out.println("\nAll text from file (exluding content inside SCRIPT and STYLE elements):\n");
-    //System.out.println(source.getTextExtractor().setIncludeAttributes(true).toString());
-//    String [] s = source.getTextExtractor().setIncludeAttributes(true).toString().split(" "); // sentence split ". "
-//    ArrayList<String>l = new ArrayList<String>();
-//    for (int i=0;i<s.length;i++){
-//        if(s[i].length()>0)
-////            if(s[i].charAt(0) != '/'&&!(Character.isDigit(s[i].charAt(0))))
-////            {
-//                l.add(s[i]);
-//                //System.out.println(s[i]);
-////            }                  
-//    }
-//ArrayList<String> res_coll = clearByFirstChar(l, '#');
-//res_coll = clearByFirstChar(res_coll, '#');
-//Collections.sort(res_coll, String.CASE_INSENSITIVE_ORDER);
+	
+	RSSFeedParser parser = new RSSFeedParser("http://www.vogella.com/article.rss");
+	Feed feed = parser.readFeed();
+	System.out.println(feed);
+	for (FeedMessage message : feed.getMessages()) {
+		
+		System.out.println(message.toString());
 
-ArrayList<String>res_coll = new SplitInWords().split(source.getTextExtractor().setIncludeAttributes(true).toString());
-
-//String [] snt = source.getTextExtractor().setIncludeAttributes(true).toString().split(". "); // sentence split ". "
-ArrayList<String>l_snt = new SplitInSents().split(source.getTextExtractor().setIncludeAttributes(true).toString());
-//for (int i=0;i<snt.length;i++){
-//    if(snt[i].length()>0)
-////        if(s[i].charAt(0) != '/'&&!(Character.isDigit(s[i].charAt(0))))
-////        {
-//            l_snt.add(s[i]);
-//            //System.out.println(s[i]);
-////        }                  
-//}
-//ArrayList<String> res_coll_snt = clearByFirstChar(l_snt, '#');
-//res_coll = clearByFirstChar(res_coll_snt, '#');
-//Collections.sort(res_coll_snt, String.CASE_INSENSITIVE_ORDER);
-
-
-
-
-//writeToDB(l_snt);
-new ExtraxtTest().writeToDB(res_coll);
-
-//for(String key: res_freq.keySet()){
-//	System.out.println(key + " " + res_freq.get(key));
-//}
-
-
-for (int i=0;i<l_snt.size();i++){
-	//System.out.println(l_snt.get(i));
-}
-	*/
-    
+	}
 }
 
 
