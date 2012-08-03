@@ -27,6 +27,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -67,7 +68,7 @@ public void testPrint(){
 	Document doc = null;
 	try {
 		builder = docFactory.newDocumentBuilder();
-		doc = builder.parse(conn.getInputStream());
+		doc = builder.parse(conn.getInputStream(),"windows-1251");
 		TransformerFactory factory = TransformerFactory.newInstance();
 		Transformer xform = null;
 		xform = factory.newTransformer();
@@ -80,20 +81,31 @@ public void testPrint(){
 		XPath xpath = xFactory.newXPath();
 
 		// Compile the XPath expression
-		expr = xpath.compile("//channel/item/title/text()");
+		expr = xpath.compile("//channel/item");
 		// Run the query and get a nodeset
 		Object result = expr.evaluate(doc, XPathConstants.NODESET);
 		
 		// Cast the result to a DOM NodeList
 		NodeList nodes = (NodeList) result;
 		for (int i=0; i<nodes.getLength();i++){
-			System.out.println(nodes.item(i).getTextContent());
+			//System.out.println("node name: "+nodes.item(i).getNodeName());
+			//System.out.println("node Text Content: "+nodes.item(i).getTextContent());
 			
-			//NodeList params = nodes.item(i).getChildNodes();
-			NodeList rootNodeList = nodes.item(i).getElementsByTagName("link");
-
-			//System.out.println(params.);
-			System.out.println(nodes.item(i).getNodeValue());
+			//expr = xpath.compile("title");
+			Element el = (Element) nodes.item(i);
+			System.out.println(el.getElementsByTagName(TITLE).item(0).getFirstChild().getNodeValue());
+			System.out.println(el.getElementsByTagName(LINK).item(0).getFirstChild().getNodeValue());
+			System.out.println(el.getElementsByTagName(PUB_DATE).item(0).getFirstChild().getNodeValue());
+			System.out.println(el.getElementsByTagName(DESCRIPTION).item(0).getFirstChild().getNodeValue());
+			
+			
+			/*
+			NodeList params = nodes.item(i).getChildNodes();
+			for(int j=0;j<params.getLength();j++){
+				System.out.println("item's tags: "+params.item(j).getNodeName()+" getContent:"+params.item(j).getTextContent());
+			}
+				*/
+			
 		}
 		
 		
