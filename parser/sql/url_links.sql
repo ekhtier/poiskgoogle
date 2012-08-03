@@ -12,4 +12,7 @@ alter table URL_LINKS
   add constraint URL_LINKS_PK primary key (URL_ID)
   using index;
   
-  create sequence URL_LINKS_SEQ;
+create sequence feed_seq;
+create table  feed(feed_id number, feed_url varchar2(1000),last_update date);
+
+create table feed_message(feed_id number, feed_message varchar2(1000), pub_date date)
