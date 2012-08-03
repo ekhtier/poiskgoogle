@@ -6,6 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.io.*;
 import java.net.*;
 import rss.*;
@@ -78,14 +81,19 @@ new ExtraxtTest().writeToDB(l_snt);
 	
 
 	
-	RSSFeedParser parser = new RSSFeedParser("http://www.vogella.com/article.rss");
-	Feed feed = parser.readFeed();
-	System.out.println(feed);
+	//RSSFeedParser parser = new RSSFeedParser("http://www.vogella.com/article.rss");
+	RSSFeedParser parser = new RSSFeedParser("http://lenta.ru/rss");
+	parser.testPrint();
+	//Feed feed = parser.readFeed();
+
+	/*
 	for (FeedMessage message : feed.getMessages()) {
 		
 		System.out.println(message.toString());
 
 	}
+	*/
+	//new ExtraxtTest().writeToDB(feed.getMessages());
 }
 
 
@@ -103,10 +111,6 @@ public HashMap countFreq(ArrayList<String> al){
 	}
 	return res_freq;
 	}
-
-
-
-
 	public ArrayList<String> clearByFirstChar(ArrayList<String> ar, char ch){	
 	    for (int i=0;i<ar.size();i++){
 
@@ -121,9 +125,6 @@ public HashMap countFreq(ArrayList<String> al){
 	    
 	    
 	}
-
-
-
 
     private static String getTitle(Source source) {
         Element titleElement=source.getFirstElement(HTMLElementName.TITLE);
@@ -142,7 +143,34 @@ public HashMap countFreq(ArrayList<String> al){
         }
         return null;
     }
-
+    public void writeToDB(List<FeedMessage> feedList){
+	       String driverName = "oracle.jdbc.driver.OracleDriver";
+	       Date pubDate = null;
+	       try {
+			Class.forName(driverName);
+		       Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@oracle-sb.tsretail.ru:1551/TEST", "word", "word");
+		       Statement stmt = connection.createStatement();
+		       PreparedStatement pstmt = connection.prepareStatement("insert into feed_message(feed_id,message,pub_date) values(1,?,?)");
+	    		DateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz",Locale.ENGLISH);
+	    	for(FeedMessage message:feedList){
+	    		pubDate = formatter.parse(message.getPubDate());
+	    		pstmt.setTimestamp(2,  new java.sql.Timestamp(pubDate.getTime()));
+	    		pstmt.setString(1, message.getTitle());
+	    		pstmt.execute();
+	    	}
+	    	pstmt.close();
+	       } catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    }
    public void writeToDB(ArrayList al){
 
 	   String ins = null;
