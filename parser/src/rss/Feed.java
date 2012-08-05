@@ -13,7 +13,8 @@ public class Feed {
 	final String language;
 	final String copyright;
 	final String pubDate;
-	final List<FeedMessage> entries = new ArrayList<FeedMessage>();
+	long db_id;
+	List<FeedMessage> entries = new ArrayList<FeedMessage>();
 
 	public Feed(String title, String link, String description, String language,
 			String copyright, String pubDate) {
@@ -24,11 +25,37 @@ public class Feed {
 		this.copyright = copyright;
 		this.pubDate = pubDate;
 	}
+	public Feed(Long feedId,String feedUrl) {
+		title = null;
+		link = feedUrl;
+		db_id = feedId; 
+		 description = null;
+		language = null;
+		copyright = null;
+		pubDate = null;
+		
+	}
+	public void refresh(){
+		entries = new RSSFeedParser().readMessages(link);
+	}
+
+	public Feed() {
+		title = null;
+		link = null;
+		 description = null;
+		language = null;
+		copyright = null;
+		pubDate = null;
+	}
+
 
 	public List<FeedMessage> getMessages() {
 		return entries;
 	}
 
+	public long getID() {
+		return db_id;
+	}
 	public String getTitle() {
 		return title;
 	}
