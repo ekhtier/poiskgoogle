@@ -3,6 +3,7 @@ import net.htmlparser.jericho.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.sql.Statement;
@@ -18,13 +19,36 @@ import rss.*;
 
 
 public class ExtraxtTest {
-	
+	private static Connection conn= null;
+	private static Connection getConnection(){
+		String driverName = "oracle.jdbc.driver.OracleDriver";
+		try {
+		if (conn!=null&&(!conn.isClosed()))
+			return conn;
+			else{
+			Properties prop = new Properties();
+				prop.load(new FileInputStream("config.properties"));
+					Class.forName(driverName);
+					   conn = DriverManager.getConnection("jdbc:oracle:thin:@"+prop.getProperty("hostname")+":"+prop.getProperty("port")+"/"+prop.getProperty("servicename"), prop.getProperty("dbuser"), prop.getProperty("dbpassword"));
+
+		}			
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		return conn;
+	}
 	public Source getSource(String sourceUrlString){
 		Source source = null;
-	    System.setProperty("http.proxyHost", "192.168.20.4");
-	    System.setProperty("http.proxyPort", "3128");
-	    System.getProperties().put("proxySet", "true");    
-	    Authenticator.setDefault(new ProxyAuthenticator("tsretail\\sitroniks", "123qwE"));  
+	    //System.setProperty("http.proxyHost", "192.168.20.4");
+	    //System.setProperty("http.proxyPort", "3128");
+	    //System.getProperties().put("proxySet", "true");    
+	    //Authenticator.setDefault(new ProxyAuthenticator("tsretail\\sitroniks", "123qwE"));  
 
 	    //if (sourceUrlString.indexOf(':')==-1) sourceUrlString="file:"+sourceUrlString;
 	    //MicrosoftConditionalCommentTagTypes.register();
@@ -63,6 +87,9 @@ public class ExtraxtTest {
 	   return linkElements;
    }
 public static void main(String[] args) throws MalformedURLException, IOException{
+	
+	String feedUrl = null;
+	long feed_id = 0;
 	Source source = new ExtraxtTest().getSource("http://en.wikipedia.org/wiki/Singular_value_decomposition");
 /*
 	List<Element> linkElements = new ExtraxtTest().extractLinksFromSource(source);
@@ -77,15 +104,37 @@ ArrayList<String>l_snt = new Splitter().splitToSentences(source.getTextExtractor
 new ExtraxtTest().writeToDB(l_snt);
 //new ExtraxtTest().writeToDB(res_coll);
     */
-	URL url = new URL("http://lenta.ru/rss");
 	
 
 	
 	//RSSFeedParser parser = new RSSFeedParser("http://www.vogella.com/article.rss");
-	RSSFeedParser parser = new RSSFeedParser("http://lenta.ru/rss");
-	parser.testPrint();
-	//Feed feed = parser.readFeed();
+	//RSSFeedParser parser = new RSSFeedParser("http://lenta.ru/rss");
+	//parser.testPrint();
 
+
+try {
+	
+   Connection connection = getConnection();
+   Statement stmt = connection.createStatement();
+
+
+   ResultSet rs = stmt.executeQuery("select feed_id, feed_url from feed where nvl(last_update,sysdate-10)<sysdate-1/24");
+   while(rs.next()){
+	   feed_id = rs.getLong(1);
+	   feedUrl = rs.getString(2);
+	   
+   }
+   rs.close();
+   stmt.close();
+   connection.close();
+} catch (SQLException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+
+   //Feed feed = parser.readFeed();
+	Feed feed = new Feed(feed_id,feedUrl);
+	feed.refresh();
 	/*
 	for (FeedMessage message : feed.getMessages()) {
 		
@@ -93,7 +142,7 @@ new ExtraxtTest().writeToDB(l_snt);
 
 	}
 	*/
-	//new ExtraxtTest().writeToDB(feed.getMessages());
+	new ExtraxtTest().writeFeedToDB(feed);
 }
 
 
@@ -143,32 +192,65 @@ public HashMap countFreq(ArrayList<String> al){
         }
         return null;
     }
-    public void writeToDB(List<FeedMessage> feedList){
-	       String driverName = "oracle.jdbc.driver.OracleDriver";
+   
+    public HashSet<String> getLastFeedMessages(long feed_id){
+    	//List<FeedMessage> messages = new ArrayList<FeedMessage>();
+    Connection c = getConnection();
+    HashSet<String> links = new HashSet<String>(); 
+    try {
+		PreparedStatement stmt = c.prepareStatement("select link from (select link From feed_message where feed_id = ? order by pub_date desc) where rownum<100");
+		stmt.setLong(1, feed_id);
+		ResultSet rs = stmt.executeQuery();
+		while(rs.next()){
+			links.add(rs.getString(1));
+		}
+		rs.close();
+		stmt.close();
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    
+    	return links;
+    }
+    public void writeFeedToDB(Feed feed){
 	       Date pubDate = null;
+	       List<FeedMessage> feedList = feed.getMessages();
+	       long feed_id = feed.getID();
+	       java.sql.Timestamp dt = new java.sql.Timestamp(System.currentTimeMillis());
+	       HashSet savedLinks = getLastFeedMessages(feed_id);
 	       try {
-			Class.forName(driverName);
-		       Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@oracle-sb.tsretail.ru:1551/TEST", "word", "word");
-		       Statement stmt = connection.createStatement();
-		       PreparedStatement pstmt = connection.prepareStatement("insert into feed_message(feed_id,message,pub_date) values(1,?,?)");
+
+		       Connection connection = getConnection();
+		    //   Statement stmt = connection.createStatement();
+		       PreparedStatement pstmt = connection.prepareStatement("insert into feed_message(feed_id,message,link,pub_date,insert_date) values(?,?,?,?,sysdate)");
 	    		DateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz",Locale.ENGLISH);
 	    	for(FeedMessage message:feedList){
+	    		if(!savedLinks.contains(message.getLink())){
+	    		System.out.println(message.getTitle());
+	    		System.out.println(message.getPubDate());
+	    		System.out.println(message.getLink());
 	    		pubDate = formatter.parse(message.getPubDate());
-	    		pstmt.setTimestamp(2,  new java.sql.Timestamp(pubDate.getTime()));
-	    		pstmt.setString(1, message.getTitle());
+	    		dt.setTime(pubDate.getTime());
+	    		pstmt.setLong(1, feed_id);
+	    		pstmt.setString(2, message.getTitle());
+	    		pstmt.setString(3,  message.getLink());
+	    		pstmt.setTimestamp(4,  dt);
+	    		
 	    		pstmt.execute();
+	    		}
 	    	}
+	    	//pstmt = connection.prepareStatement("update feed set last_update where feed_id = ?");
 	    	pstmt.close();
-	       } catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
+	    	
+	       }catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
     	
     }
    public void writeToDB(ArrayList al){
