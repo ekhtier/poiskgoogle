@@ -83,9 +83,9 @@ public class RSSFeedParser {
 		builder = docFactory.newDocumentBuilder();
 		doc = builder.parse(conn.getInputStream(),"windows-1251");
 		TransformerFactory factory = TransformerFactory.newInstance();
-		Transformer xform = null;
-		xform = factory.newTransformer();
-		xform.transform(new DOMSource(doc), new StreamResult(System.out));
+		//Transformer xform = null;
+		//xform = factory.newTransformer();
+		//xform.transform(new DOMSource(doc), new StreamResult(System.out));
 		XPathFactory xFactory = XPathFactory.newInstance();
 		// Create a XPath object
 		XPath xpath = xFactory.newXPath();
@@ -136,10 +136,13 @@ public class RSSFeedParser {
 	} catch (ParserConfigurationException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
-	} catch (TransformerException e) {
+	}/*
+	catch (TransformerException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
-	} catch (XPathExpressionException e) {
+	} 
+	*/
+	catch (XPathExpressionException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
