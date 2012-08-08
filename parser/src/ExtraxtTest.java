@@ -13,36 +13,14 @@ import java.text.SimpleDateFormat;
 import java.io.*;
 import java.net.*;
 import rss.*;
-
+import org.apache.log4j.Logger;
 
 
 
 
 public class ExtraxtTest {
-	private static Connection conn= null;
-	private static Connection getConnection(){
-		String driverName = "oracle.jdbc.driver.OracleDriver";
-		try {
-		if (conn!=null&&(!conn.isClosed()))
-			return conn;
-			else{
-			Properties prop = new Properties();
-				prop.load(new FileInputStream("config.properties"));
-					Class.forName(driverName);
-					   conn = DriverManager.getConnection("jdbc:oracle:thin:@"+prop.getProperty("hostname")+":"+prop.getProperty("port")+"/"+prop.getProperty("servicename"), prop.getProperty("dbuser"), prop.getProperty("dbpassword"));
-
-		}			
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		return conn;
-	}
+	static DBWriter dbw = null;
+	 public static final Logger log=Logger.getLogger(ExtraxtTest.class);
 	public Source getSource(String sourceUrlString){
 		Source source = null;
 	    //System.setProperty("http.proxyHost", "192.168.20.4");
@@ -88,9 +66,11 @@ public class ExtraxtTest {
    }
 public static void main(String[] args) throws MalformedURLException, IOException{
 	
+	
+	dbw = new DBWriter();
 	String feedUrl = null;
 	long feed_id = 0;
-	Source source = new ExtraxtTest().getSource("http://en.wikipedia.org/wiki/Singular_value_decomposition");
+	//Source source = new ExtraxtTest().getSource("http://en.wikipedia.org/wiki/Singular_value_decomposition");
 /*
 	List<Element> linkElements = new ExtraxtTest().extractLinksFromSource(source);
     for (Element linkElement : linkElements) 
@@ -114,7 +94,7 @@ new ExtraxtTest().writeToDB(l_snt);
 
 try {
 	
-   Connection connection = getConnection();
+   Connection connection = dbw.getConnection();
    Statement stmt = connection.createStatement();
 
 
@@ -122,7 +102,11 @@ try {
    while(rs.next()){
 	   feed_id = rs.getLong(1);
 	   feedUrl = rs.getString(2);
-	   
+		Feed feed = new Feed(feed_id,feedUrl);
+		feed.refresh();
+		
+		new ExtraxtTest().writeFeedToDB(feed);	
+		log.debug("running with feed "+feedUrl);
    }
    rs.close();
    stmt.close();
@@ -133,16 +117,7 @@ try {
 }
 
    //Feed feed = parser.readFeed();
-	Feed feed = new Feed(feed_id,feedUrl);
-	feed.refresh();
-	/*
-	for (FeedMessage message : feed.getMessages()) {
-		
-		System.out.println(message.toString());
 
-	}
-	*/
-	new ExtraxtTest().writeFeedToDB(feed);
 }
 
 
@@ -195,7 +170,7 @@ public HashMap countFreq(ArrayList<String> al){
    
     public HashSet<String> getLastFeedMessages(long feed_id){
     	//List<FeedMessage> messages = new ArrayList<FeedMessage>();
-    Connection c = getConnection();
+    Connection c = dbw.getConnection();
     HashSet<String> links = new HashSet<String>(); 
     try {
 		PreparedStatement stmt = c.prepareStatement("select link from (select link From feed_message where feed_id = ? order by pub_date desc) where rownum<100");
@@ -221,9 +196,9 @@ public HashMap countFreq(ArrayList<String> al){
 	       HashSet savedLinks = getLastFeedMessages(feed_id);
 	       try {
 
-		       Connection connection = getConnection();
+		       Connection connection = dbw.getConnection();
 		    //   Statement stmt = connection.createStatement();
-		       PreparedStatement pstmt = connection.prepareStatement("insert into feed_message(feed_id,message,link,pub_date,insert_date) values(?,?,?,?,sysdate)");
+		       PreparedStatement pstmt = connection.prepareStatement("insert into feed_message(feed_id,message,link,pub_date,description,insert_date) values(?,?,?,?,?,sysdate)");
 	    		DateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz",Locale.ENGLISH);
 	    	for(FeedMessage message:feedList){
 	    		if(!savedLinks.contains(message.getLink())){
@@ -236,12 +211,17 @@ public HashMap countFreq(ArrayList<String> al){
 	    		pstmt.setString(2, message.getTitle());
 	    		pstmt.setString(3,  message.getLink());
 	    		pstmt.setTimestamp(4,  dt);
+	    		pstmt.setString(5,  message.getDescription());
 	    		
 	    		pstmt.execute();
 	    		}
 	    	}
-	    	//pstmt = connection.prepareStatement("update feed set last_update where feed_id = ?");
-	    	pstmt.close();
+	    	
+	    	
+		    	pstmt = connection.prepareStatement("update feed set last_update=sysdate where feed_id = ?");
+		    	pstmt.setLong(1, feed_id);
+		    	pstmt.execute();
+		    	pstmt.close();
 	    	
 	       }catch (SQLException e) {
 			// TODO Auto-generated catch block
